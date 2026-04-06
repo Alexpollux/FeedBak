@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-plus-jakarta), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAF8;
+  color: #1C1917;
+}
+
+::selection {
+  background-color: #FDE68A;
+  color: #1C1917;
+}
