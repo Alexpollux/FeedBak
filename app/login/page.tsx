@@ -36,7 +36,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link href="/" className="font-display font-bold text-2xl text-stone-900">
-            Feedback<span className="text-amber-500">Drop</span>
+            Feed<span className="text-amber-500">Bak</span>
           </Link>
           <p className="text-stone-500 text-sm mt-2">Bon retour parmi nous 👋</p>
         </div>

@@ -24,7 +24,7 @@ export default function Sidebar({ slug }: { slug: string }) {
   return (
     <aside className="w-56 shrink-0 hidden md:flex flex-col bg-white border-r border-stone-100 min-h-screen p-4">
       <Link href="/" className="font-display font-bold text-lg text-stone-900 px-3 py-2 mb-6">
-        Feedback<span className="text-amber-500">Drop</span>
+        Feed<span className="text-amber-500">Bak</span>
       </Link>
 
       <nav className="flex flex-col gap-1 flex-1">
