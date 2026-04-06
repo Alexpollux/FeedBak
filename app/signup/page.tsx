@@ -44,8 +44,8 @@ export default function SignupPage() {
   }
 
   const slugPreview = form.slug
-    ? `feedbak.app/f/${form.slug}`
-    : 'feedbak.app/f/votre-nom'
+    ? `feed-bak.vercel.app/f/${form.slug}`
+    : 'feed-bak.vercel.app/f/votre-nom'
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4 py-12">
