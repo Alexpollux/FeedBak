@@ -9,13 +9,14 @@ export default function Footer() {
         </p>
 
         <p className="text-sm text-stone-400">
-          © {new Date().getFullYear()} FeedBak. Fait avec ☕ pour les indépendants.
+          © {new Date().getFullYear()} FeedBak.
         </p>
 
         <div className="flex items-center gap-6 text-sm text-stone-400">
           <Link href="#" className="hover:text-stone-600 transition-colors">Mentions légales</Link>
           <Link href="#" className="hover:text-stone-600 transition-colors">Confidentialité</Link>
           <Link href="/login" className="hover:text-stone-600 transition-colors">Connexion</Link>
+          <a href="https://meme-dev.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-600 transition-colors">meme-dev.com</a>
         </div>
       </div>
     </footer>
