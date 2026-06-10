@@ -59,7 +59,7 @@ export default async function PublicFeedbackPage({ params }: Props) {
         </div>
 
         {/* Formulaire */}
-        <FeedbackForm userId={user.id} slug={slug} />
+        <FeedbackForm slug={slug} />
 
         {/* Branding */}
         <p className="text-center text-xs text-stone-300 mt-8">

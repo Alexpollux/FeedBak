@@ -14,19 +14,18 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { userId, rating, comment } = body
+  const { slug, rating, comment } = body
 
-  if (!userId || !rating || rating < 1 || rating > 5) {
+  if (!slug || !rating || rating < 1 || rating > 5) {
     return NextResponse.json({ error: 'Données invalides' }, { status: 400 })
   }
 
-  // Limite longueur du commentaire
   if (comment && comment.length > 1000) {
     return NextResponse.json({ error: 'Commentaire trop long (1000 caractères max).' }, { status: 400 })
   }
 
-  // Vérifier que l'utilisateur existe
-  const user = await prisma.user.findUnique({ where: { id: userId } })
+  // Résolution du slug → utilisateur côté serveur (userId jamais exposé au client)
+  const user = await prisma.user.findUnique({ where: { slug } })
   if (!user) {
     return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
   }
@@ -38,7 +37,7 @@ export async function POST(request: NextRequest) {
     startOfMonth.setHours(0, 0, 0, 0)
 
     const monthCount = await prisma.feedback.count({
-      where: { userId, createdAt: { gte: startOfMonth } },
+      where: { userId: user.id, createdAt: { gte: startOfMonth } },
     })
 
     if (monthCount >= 50) {
@@ -51,7 +50,7 @@ export async function POST(request: NextRequest) {
 
   const feedback = await prisma.feedback.create({
     data: {
-      userId,
+      userId: user.id,
       rating: Number(rating),
       comment: comment?.trim() || null,
     },

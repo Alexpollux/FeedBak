@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import StarRating from '@/components/ui/StarRating'
 import Button from '@/components/ui/Button'
 
-export default function FeedbackForm({ userId, slug }: { userId: string; slug: string }) {
+const MAX_COMMENT = 1000
+
+export default function FeedbackForm({ slug }: { slug: string }) {
   const router = useRouter()
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
@@ -24,13 +26,14 @@ export default function FeedbackForm({ userId, slug }: { userId: string; slug: s
     const res = await fetch('/api/feedback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, rating, comment }),
+      body: JSON.stringify({ slug, rating, comment }),
     })
 
     if (res.ok) {
       router.push(`/f/${slug}/merci`)
     } else {
-      setError('Une erreur est survenue. Veuillez réessayer.')
+      const data = await res.json()
+      setError(data.error ?? 'Une erreur est survenue. Veuillez réessayer.')
       setLoading(false)
     }
   }
@@ -55,14 +58,20 @@ export default function FeedbackForm({ userId, slug }: { userId: string; slug: s
 
         {/* Commentaire */}
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">
-            Un commentaire ? <span className="text-stone-400 font-normal">(optionnel)</span>
-          </label>
+          <div className="flex justify-between items-center mb-1.5">
+            <label className="block text-sm font-medium text-stone-700">
+              Un commentaire ? <span className="text-stone-400 font-normal">(optionnel)</span>
+            </label>
+            <span className={`text-xs ${comment.length > MAX_COMMENT * 0.9 ? 'text-red-400' : 'text-stone-300'}`}>
+              {comment.length}/{MAX_COMMENT}
+            </span>
+          </div>
           <textarea
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(e) => setComment(e.target.value.slice(0, MAX_COMMENT))}
             placeholder="Partagez votre expérience..."
             rows={4}
+            maxLength={MAX_COMMENT}
             className="w-full px-4 py-3 rounded-xl border border-stone-200 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-none"
           />
         </div>
