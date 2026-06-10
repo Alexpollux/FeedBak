@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { stripe, PLANS, type PlanKey } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
 
@@ -24,10 +24,16 @@ export async function POST(request: NextRequest) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
       const userId = session.metadata?.userId
+      const planKey = (session.metadata?.plan ?? 'PRO') as PlanKey
+      const plan = PLANS[planKey] ?? PLANS.PRO
+
       if (userId) {
         await prisma.user.update({
           where: { id: userId },
-          data: { plan: 'PRO' },
+          data: {
+            plan: planKey,
+            projectLimit: plan.projectLimit,
+          },
         })
       }
       break
@@ -38,7 +44,7 @@ export async function POST(request: NextRequest) {
       const customerId = subscription.customer as string
       await prisma.user.update({
         where: { stripeCustomerId: customerId },
-        data: { plan: 'FREE' },
+        data: { plan: 'FREE', projectLimit: 0 },
       })
       break
     }
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
       const customerId = invoice.customer as string
       await prisma.user.update({
         where: { stripeCustomerId: customerId },
-        data: { plan: 'FREE' },
+        data: { plan: 'FREE', projectLimit: 0 },
       })
       break
     }

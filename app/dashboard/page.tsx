@@ -12,8 +12,11 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Récupère ou crée le profil Prisma
-  let profile = await prisma.user.findUnique({ where: { email: user.email! } })
+  let profile = await prisma.user.findUnique({
+    where: { email: user.email! },
+    include: { projects: { orderBy: { order: 'asc' } } },
+  })
+
   if (!profile) {
     const meta = user.user_metadata
     profile = await prisma.user.create({
@@ -23,12 +26,14 @@ export default async function DashboardPage() {
         name: meta?.name ?? null,
         slug: meta?.slug ?? user.id.slice(0, 8),
       },
+      include: { projects: true },
     })
   }
 
   const feedbacks = await prisma.feedback.findMany({
     where: { userId: profile.id },
     orderBy: { createdAt: 'desc' },
+    include: { project: true },
   })
 
   const now = new Date()
@@ -38,6 +43,8 @@ export default async function DashboardPage() {
     ? feedbacks.reduce((acc, f) => acc + f.rating, 0) / feedbacks.length
     : 0
 
+  const isPro = profile.plan === 'PRO' || profile.plan === 'BUSINESS'
+  const isBusiness = profile.plan === 'BUSINESS'
   const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/f/${profile.slug}`
 
   return (
@@ -53,8 +60,8 @@ export default async function DashboardPage() {
             </h1>
             <p className="text-stone-400 text-sm mt-1">Voici un résumé de vos avis</p>
           </div>
-          <Badge variant={profile.plan === 'PRO' ? 'pro' : 'free'}>
-            {profile.plan === 'PRO' ? '⚡ Pro' : 'Gratuit'}
+          <Badge variant={isBusiness ? 'business' : isPro ? 'pro' : 'free'}>
+            {isBusiness ? '🚀 Business' : isPro ? '⚡ Pro' : 'Gratuit'}
           </Badge>
         </div>
 
@@ -73,9 +80,12 @@ export default async function DashboardPage() {
         </div>
 
         {/* Liste */}
-        <FeedbackList feedbacks={feedbacks} isPro={profile.plan === 'PRO'} />
+        <FeedbackList
+          feedbacks={feedbacks}
+          isPro={isPro}
+          projects={profile.projects}
+        />
       </main>
     </div>
   )
 }
-

@@ -14,15 +14,33 @@ model User {
   slug             String     @unique
   plan             Plan       @default(FREE)
   stripeCustomerId String?    @unique
+  enableFirstName  Boolean    @default(false)
+  enableLastName   Boolean    @default(false)
+  projectLimit     Int        @default(0)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   feedbacks        Feedback[]
+  projects         Project[]
+}
+
+model Project {
+  id        String     @id @default(cuid())
+  name      String
+  order     Int        @default(0)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedbacks Feedback[]
+  createdAt DateTime   @default(now())
 }
 
 model Feedback {
   id        String   @id @default(cuid())
   rating    Int
   comment   String?
+  firstName String?
+  lastName  String?
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -31,4 +49,5 @@ model Feedback {
 enum Plan {
   FREE
   PRO
+  BUSINESS
 }

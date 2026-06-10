@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkRateLimit } from '@/lib/rate-limit'
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
 export async function POST(request: NextRequest) {
   // Rate limiting par IP : 10 avis max par heure
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -14,7 +23,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { slug, rating, comment } = body
+  const { slug, rating, comment, firstName, lastName, projectId } = body
 
   if (!slug || !rating || rating < 1 || rating > 5) {
     return NextResponse.json({ error: 'Données invalides' }, { status: 400 })
@@ -24,8 +33,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Commentaire trop long (1000 caractères max).' }, { status: 400 })
   }
 
-  // Résolution du slug → utilisateur côté serveur (userId jamais exposé au client)
-  const user = await prisma.user.findUnique({ where: { slug } })
+  if (firstName && firstName.length > 100) {
+    return NextResponse.json({ error: 'Prénom trop long.' }, { status: 400 })
+  }
+
+  if (lastName && lastName.length > 100) {
+    return NextResponse.json({ error: 'Nom trop long.' }, { status: 400 })
+  }
+
+  // Résolution du slug → utilisateur côté serveur
+  const user = await prisma.user.findUnique({
+    where: { slug },
+    include: { projects: true },
+  })
   if (!user) {
     return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
   }
@@ -48,11 +68,24 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Valider le projectId s'il est fourni
+  let resolvedProjectId: string | null = null
+  if (projectId) {
+    const project = user.projects.find((p) => p.id === projectId)
+    if (!project) {
+      return NextResponse.json({ error: 'Projet invalide.' }, { status: 400 })
+    }
+    resolvedProjectId = project.id
+  }
+
   const feedback = await prisma.feedback.create({
     data: {
       userId: user.id,
       rating: Number(rating),
-      comment: comment?.trim() || null,
+      comment: comment ? escapeHtml(comment.trim()) : null,
+      firstName: (user.enableFirstName && firstName) ? escapeHtml(firstName.trim()) : null,
+      lastName: (user.enableLastName && lastName) ? escapeHtml(lastName.trim()) : null,
+      projectId: resolvedProjectId,
     },
   })
 

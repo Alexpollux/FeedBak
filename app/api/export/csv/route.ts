@@ -10,23 +10,40 @@ export async function GET() {
   const profile = await prisma.user.findUnique({ where: { email: user.email! } })
   if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
 
-  if (profile.plan !== 'PRO') {
-    return NextResponse.json({ error: 'Fonctionnalité réservée au plan Pro' }, { status: 403 })
+  if (profile.plan === 'FREE') {
+    return NextResponse.json({ error: 'Fonctionnalité réservée aux plans Pro et Business' }, { status: 403 })
   }
 
   const feedbacks = await prisma.feedback.findMany({
     where: { userId: profile.id },
     orderBy: { createdAt: 'desc' },
+    include: { project: true },
   })
 
-  const header = 'Note,Commentaire,Date'
+  const hasFirstName = profile.enableFirstName
+  const hasLastName = profile.enableLastName
+  const hasProjects = feedbacks.some((f) => f.project)
+
+  // Construire les colonnes dynamiquement
+  const headerCols = ['Note', 'Commentaire']
+  if (hasFirstName) headerCols.push('Prénom')
+  if (hasLastName) headerCols.push('Nom')
+  if (hasProjects) headerCols.push('Projet')
+  headerCols.push('Date')
+
   const rows = feedbacks.map((fb) => {
-    const comment = fb.comment ? `"${fb.comment.replace(/"/g, '""')}"` : ''
-    const date = new Date(fb.createdAt).toLocaleDateString('fr-FR')
-    return `${fb.rating},${comment},${date}`
+    const cols = [
+      fb.rating.toString(),
+      fb.comment ? `"${fb.comment.replace(/"/g, '""')}"` : '',
+    ]
+    if (hasFirstName) cols.push(fb.firstName ? `"${fb.firstName}"` : '')
+    if (hasLastName) cols.push(fb.lastName ? `"${fb.lastName}"` : '')
+    if (hasProjects) cols.push(fb.project ? `"${fb.project.name}"` : '')
+    cols.push(new Date(fb.createdAt).toLocaleDateString('fr-FR'))
+    return cols.join(',')
   })
 
-  const csv = [header, ...rows].join('\n')
+  const csv = [headerCols.join(','), ...rows].join('\n')
 
   return new NextResponse(csv, {
     status: 200,

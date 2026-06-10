@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function PublicFeedbackPage({ params }: Props) {
   const { slug } = await params
-  const user = await prisma.user.findUnique({ where: { slug } })
+  const user = await prisma.user.findUnique({
+    where: { slug },
+    include: { projects: { orderBy: { order: 'asc' } } },
+  })
   if (!user) notFound()
 
   const feedbackCount = await prisma.feedback.count({ where: { userId: user.id } })
@@ -59,7 +62,12 @@ export default async function PublicFeedbackPage({ params }: Props) {
         </div>
 
         {/* Formulaire */}
-        <FeedbackForm slug={slug} />
+        <FeedbackForm
+          slug={slug}
+          enableFirstName={user.enableFirstName}
+          enableLastName={user.enableLastName}
+          projects={user.projects.map((p) => ({ id: p.id, name: p.name }))}
+        />
 
         {/* Branding */}
         <p className="text-center text-xs text-stone-300 mt-8">

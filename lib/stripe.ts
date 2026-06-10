@@ -8,7 +8,16 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export const PLANS = {
   PRO: {
     name: 'Pro',
-    price: 9,
-    priceId: process.env.STRIPE_PRICE_ID!,
+    price: 15,
+    priceId: process.env.STRIPE_PRICE_ID_PRO!,
+    projectLimit: 5,
+  },
+  BUSINESS: {
+    name: 'Business',
+    price: 30,
+    priceId: process.env.STRIPE_PRICE_ID_BUSINESS!,
+    projectLimit: 20,
   },
 }
+
+export type PlanKey = keyof typeof PLANS
