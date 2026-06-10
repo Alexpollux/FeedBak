@@ -1,6 +1,14 @@
-import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
 
-export default function MerciPage() {
+interface Props {
+  params: Promise<{ slug: string }>
+}
+
+export default async function MerciPage({ params }: Props) {
+  const { slug } = await params
+  const user = await prisma.user.findUnique({ where: { slug } })
+  const redirectUrl = user?.redirectUrl ?? null
+
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
@@ -12,12 +20,14 @@ export default function MerciPage() {
           Votre retour est précieux et aide à améliorer le service.
           Il a bien été transmis.
         </p>
-        <Link
-          href="/"
-          className="text-sm text-amber-600 font-medium hover:underline"
-        >
-          ← Retour à l'accueil
-        </Link>
+        {redirectUrl && (
+          <a
+            href={redirectUrl}
+            className="inline-block bg-amber-500 text-white text-sm font-medium px-6 py-3 rounded-xl hover:bg-amber-600 transition-colors"
+          >
+            Retourner sur le site →
+          </a>
+        )}
       </div>
     </div>
   )

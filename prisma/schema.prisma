@@ -17,6 +17,7 @@ model User {
   enableFirstName  Boolean    @default(false)
   enableLastName   Boolean    @default(false)
   projectLimit     Int        @default(0)
+  redirectUrl      String?
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   feedbacks        Feedback[]

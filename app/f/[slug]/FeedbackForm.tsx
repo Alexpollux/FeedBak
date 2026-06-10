@@ -32,6 +32,10 @@ export default function FeedbackForm({ slug, enableFirstName, enableLastName, pr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (projects.length > 0 && !projectId) {
+      setError('Veuillez sélectionner un projet.')
+      return
+    }
     if (rating === 0) {
       setError('Veuillez sélectionner une note.')
       return
@@ -103,7 +107,7 @@ export default function FeedbackForm({ slug, enableFirstName, enableLastName, pr
         {projects.length > 0 && (
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">
-              Projet <span className="text-stone-400 font-normal">(optionnel)</span>
+              Projet <span className="text-red-500">*</span>
             </label>
             <select
               value={projectId}
@@ -121,7 +125,7 @@ export default function FeedbackForm({ slug, enableFirstName, enableLastName, pr
         {/* Note */}
         <div>
           <label className="block text-sm font-medium text-stone-700 mb-3">
-            Quelle note donneriez-vous ?
+            Quelle note donneriez-vous ? <span className="text-red-500">*</span>
           </label>
           <div className="flex justify-center">
             <StarRating value={rating} onChange={setRating} size="lg" />

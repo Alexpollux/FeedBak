@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Sidebar from '@/components/dashboard/Sidebar'
 import Badge from '@/components/ui/Badge'
 import ProSettings from '@/components/dashboard/ProSettings'
+import RedirectSettings from '@/components/dashboard/RedirectSettings'
 import { ArrowRight } from 'lucide-react'
 
 export default async function SettingsPage() {
@@ -53,6 +54,11 @@ export default async function SettingsPage() {
               </Badge>
             </div>
           </div>
+        </div>
+
+        {/* Lien de redirection — disponible pour tous */}
+        <div className="mb-4">
+          <RedirectSettings redirectUrl={profile.redirectUrl ?? null} />
         </div>
 
         {/* Fonctionnalités Pro / Business */}
