@@ -5,6 +5,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import Badge from '@/components/ui/Badge'
 import ProSettings from '@/components/dashboard/ProSettings'
 import RedirectSettings from '@/components/dashboard/RedirectSettings'
+import UpgradeBusinessButton from '@/components/dashboard/UpgradeBusinessButton'
 import { ArrowRight } from 'lucide-react'
 
 export default async function SettingsPage({
@@ -165,14 +166,7 @@ export default async function SettingsPage({
                 30€<span className="text-sm font-normal text-stone-400">/mois</span>
               </span>
             </div>
-            <form action="/api/stripe/upgrade" method="POST">
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 bg-stone-800 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
-              >
-                Passer au Business <ArrowRight size={14} />
-              </button>
-            </form>
+            <UpgradeBusinessButton />
           </div>
         )}
 
