@@ -39,6 +39,29 @@ export async function POST(request: NextRequest) {
       break
     }
 
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as Stripe.Subscription
+      const customerId = subscription.customer as string
+      const priceId = subscription.items.data[0]?.price.id
+
+      let plan: 'FREE' | 'PRO' | 'BUSINESS' = 'FREE'
+      let projectLimit = 0
+
+      if (priceId === process.env.STRIPE_PRICE_ID_PRO) {
+        plan = 'PRO'
+        projectLimit = PLANS.PRO.projectLimit
+      } else if (priceId === process.env.STRIPE_PRICE_ID_BUSINESS) {
+        plan = 'BUSINESS'
+        projectLimit = PLANS.BUSINESS.projectLimit
+      }
+
+      await prisma.user.update({
+        where: { stripeCustomerId: customerId },
+        data: { plan, projectLimit },
+      })
+      break
+    }
+
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as Stripe.Subscription
       const customerId = subscription.customer as string
