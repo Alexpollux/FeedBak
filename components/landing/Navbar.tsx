@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import { Menu, X } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 const links = [
   { label: 'Fonctionnalités', href: '#features' },
@@ -12,6 +13,14 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session)
+    })
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-[#FAFAF8]/90 backdrop-blur-sm border-b border-stone-200/60">
@@ -34,12 +43,20 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/login">
-            <Button variant="ghost" size="sm">Connexion</Button>
-          </Link>
-          <Link href="/signup">
-            <Button size="sm">Essayer gratuitement</Button>
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/dashboard">
+              <Button size="sm">Mon dashboard</Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm">Connexion</Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="sm">Essayer gratuitement</Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -63,10 +80,18 @@ export default function Navbar() {
             </a>
           ))}
           <hr className="border-stone-100" />
-          <Link href="/login" className="text-sm text-stone-600">Connexion</Link>
-          <Link href="/signup">
-            <Button size="sm" className="w-full">Essayer gratuitement</Button>
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/dashboard">
+              <Button size="sm" className="w-full">Mon dashboard</Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm text-stone-600">Connexion</Link>
+              <Link href="/signup">
+                <Button size="sm" className="w-full">Essayer gratuitement</Button>
+              </Link>
+            </>
+          )}
         </div>
       )}
     </header>
