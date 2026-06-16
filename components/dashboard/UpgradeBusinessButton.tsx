@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, X } from 'lucide-react'
+import { ArrowRight, X, ExternalLink } from 'lucide-react'
 
 export default function UpgradeBusinessButton() {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   return (
     <>
@@ -30,7 +29,7 @@ export default function UpgradeBusinessButton() {
               Passer au plan Business 🚀
             </h2>
             <p className="text-sm text-stone-400 mb-6">
-              Confirmez le changement d'abonnement
+              Vous allez être redirigé vers Stripe pour confirmer le changement.
             </p>
 
             <div className="bg-stone-50 rounded-xl p-4 space-y-3 mb-6 text-sm">
@@ -43,12 +42,8 @@ export default function UpgradeBusinessButton() {
                 <span className="font-medium text-stone-700">Business — 30€/mois</span>
               </div>
               <hr className="border-stone-200" />
-              <div className="flex justify-between">
-                <span className="text-stone-500">Facturation aujourd'hui</span>
-                <span className="font-semibold text-stone-900">Différence au prorata</span>
-              </div>
               <p className="text-xs text-stone-400">
-                Stripe calcule automatiquement le temps restant sur votre plan Pro et ne facture que la différence pour la période en cours.
+                Stripe affichera le montant exact à payer aujourd'hui (prorata du temps restant), et enverra une facture par email.
               </p>
             </div>
 
@@ -59,20 +54,12 @@ export default function UpgradeBusinessButton() {
               >
                 Annuler
               </button>
-              <form
-                action="/api/stripe/upgrade"
-                method="POST"
-                onSubmit={() => setLoading(true)}
-                className="flex-1"
+              <a
+                href="/api/stripe/portal"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-stone-800 text-white text-sm font-medium hover:bg-stone-700 transition-colors"
               >
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-800 text-white text-sm font-medium hover:bg-stone-700 transition-colors disabled:opacity-60"
-                >
-                  {loading ? 'Traitement…' : 'Confirmer le passage'}
-                </button>
-              </form>
+                Continuer sur Stripe <ExternalLink size={13} />
+              </a>
             </div>
           </div>
         </div>
