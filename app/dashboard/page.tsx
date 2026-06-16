@@ -86,7 +86,7 @@ export default async function DashboardPage() {
             <RatingsChart
               feedbacks={feedbacks.map((f) => ({
                 rating: f.rating,
-                createdAt: f.createdAt,
+                createdAt: f.createdAt.toISOString(),
                 project: f.project ? { id: f.project.id, name: f.project.name } : null,
               }))}
               projects={profile.projects}

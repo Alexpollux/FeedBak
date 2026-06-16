@@ -13,7 +13,7 @@ import {
 
 interface Feedback {
   rating: number
-  createdAt: Date
+  createdAt: string
   project: { id: string; name: string } | null
 }
 
@@ -160,8 +160,8 @@ export default function RatingsChart({ feedbacks, projects }: Props) {
               strokeWidth={2}
               fill="url(#ratingGradient)"
               connectNulls
-              dot={false}
-              activeDot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }}
+              dot={{ r: 3, fill: '#f59e0b', strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: '#f59e0b', strokeWidth: 0 }}
             />
             <Area
               type="monotone"
