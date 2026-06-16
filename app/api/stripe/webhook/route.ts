@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       const customerId = subscription.customer as string
       await prisma.user.update({
         where: { stripeCustomerId: customerId },
-        data: { plan: 'FREE', projectLimit: 0 },
+        data: { plan: 'FREE', projectLimit: 1 },
       })
       break
     }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       const customerId = invoice.customer as string
       await prisma.user.update({
         where: { stripeCustomerId: customerId },
-        data: { plan: 'FREE', projectLimit: 0 },
+        data: { plan: 'FREE', projectLimit: 1 },
       })
       break
     }

@@ -13,6 +13,7 @@ interface Props {
   enableLastName: boolean
   projects: Project[]
   projectLimit: number
+  showFields?: boolean
 }
 
 export default function ProSettings({
@@ -20,6 +21,7 @@ export default function ProSettings({
   enableLastName: initialLastName,
   projects: initialProjects,
   projectLimit,
+  showFields = false,
 }: Props) {
   const [enableFirstName, setEnableFirstName] = useState(initialFirstName)
   const [enableLastName, setEnableLastName] = useState(initialLastName)
@@ -87,8 +89,8 @@ export default function ProSettings({
 
   return (
     <div className="space-y-4">
-      {/* Champs du formulaire */}
-      <div className="bg-white rounded-2xl border border-stone-100 p-6">
+      {/* Champs du formulaire — Pro/Business uniquement */}
+      {showFields && <div className="bg-white rounded-2xl border border-stone-100 p-6">
         <h2 className="font-display font-semibold text-stone-800 mb-1">Champs du formulaire</h2>
         <p className="text-sm text-stone-400 mb-5">
           Activez les champs supplémentaires qui apparaîtront sur votre formulaire public.
@@ -120,7 +122,7 @@ export default function ProSettings({
           {success && <span className="text-sm text-green-600">{success}</span>}
           {error && <span className="text-sm text-red-500">{error}</span>}
         </div>
-      </div>
+      </div>}
 
       {/* Projets */}
       <div className="bg-white rounded-2xl border border-stone-100 p-6">

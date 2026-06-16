@@ -83,17 +83,16 @@ export default async function SettingsPage({
           <RedirectSettings redirectUrl={profile.redirectUrl ?? null} />
         </div>
 
-        {/* Fonctionnalités Pro / Business */}
-        {(isPro || isBusiness) && (
-          <div className="mb-4">
-            <ProSettings
-              enableFirstName={profile.enableFirstName}
-              enableLastName={profile.enableLastName}
-              projects={profile.projects}
-              projectLimit={profile.projectLimit}
-            />
-          </div>
-        )}
+        {/* Projets — tous les plans, champs Prénom/Nom Pro/Business uniquement */}
+        <div className="mb-4">
+          <ProSettings
+            enableFirstName={profile.enableFirstName}
+            enableLastName={profile.enableLastName}
+            projects={profile.projects}
+            projectLimit={profile.projectLimit}
+            showFields={isPro || isBusiness}
+          />
+        </div>
 
         {/* Upgrade FREE → PRO */}
         {profile.plan === 'FREE' && (

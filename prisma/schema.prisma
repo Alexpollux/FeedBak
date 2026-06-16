@@ -16,7 +16,7 @@ model User {
   stripeCustomerId String?    @unique
   enableFirstName  Boolean    @default(false)
   enableLastName   Boolean    @default(false)
-  projectLimit     Int        @default(0)
+  projectLimit     Int        @default(1)
   redirectUrl      String?
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt

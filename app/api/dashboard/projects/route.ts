@@ -29,10 +29,6 @@ export async function POST(request: NextRequest) {
   })
   if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
 
-  if (profile.plan === 'FREE') {
-    return NextResponse.json({ error: 'Fonctionnalité réservée aux plans Pro et Business.' }, { status: 403 })
-  }
-
   if (profile.projects.length >= profile.projectLimit) {
     return NextResponse.json(
       { error: `Limite atteinte (${profile.projectLimit} projets max sur votre plan).` },
