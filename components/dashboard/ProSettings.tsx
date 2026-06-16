@@ -137,18 +137,37 @@ export default function ProSettings({
         {/* Liste des projets */}
         {projects.length > 0 && (
           <ul className="space-y-2 mb-4">
-            {projects.map((p) => (
-              <li key={p.id} className="flex items-center justify-between bg-stone-50 rounded-xl px-4 py-3">
-                <span className="text-sm text-stone-700 font-medium">{p.name}</span>
-                <button
-                  onClick={() => deleteProject(p.id)}
-                  className="text-xs text-red-400 hover:text-red-600 transition-colors"
+            {projects.map((p, i) => {
+              const locked = i >= projectLimit
+              return (
+                <li
+                  key={p.id}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 ${
+                    locked ? 'bg-stone-100 opacity-60' : 'bg-stone-50'
+                  }`}
                 >
-                  Supprimer
-                </button>
-              </li>
-            ))}
+                  <div className="flex items-center gap-2">
+                    {locked && <span className="text-xs">🔒</span>}
+                    <span className={`text-sm font-medium ${locked ? 'text-stone-400' : 'text-stone-700'}`}>
+                      {p.name}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => deleteProject(p.id)}
+                    className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                  >
+                    Supprimer
+                  </button>
+                </li>
+              )
+            })}
           </ul>
+        )}
+
+        {projects.length > projectLimit && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700 mb-4">
+            🔒 {projects.length - projectLimit} projet{projects.length - projectLimit > 1 ? 's' : ''} verrouillé{projects.length - projectLimit > 1 ? 's' : ''}. Repassez au plan supérieur pour les réactiver.
+          </div>
         )}
 
         {/* Ajouter un projet */}
@@ -172,7 +191,7 @@ export default function ProSettings({
           </div>
         )}
 
-        {projects.length >= projectLimit && (
+        {projects.length === projectLimit && (
           <p className="text-sm text-stone-400 italic">
             Limite atteinte. Passez au plan supérieur pour ajouter plus de projets.
           </p>
