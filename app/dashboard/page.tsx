@@ -6,6 +6,7 @@ import StatsCards from '@/components/dashboard/StatsCards'
 import FeedbackList from '@/components/dashboard/FeedbackList'
 import Badge from '@/components/ui/Badge'
 import CopyButton from '@/components/dashboard/CopyButton'
+import RatingsChart from '@/components/dashboard/RatingsChart'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -78,6 +79,20 @@ export default async function DashboardPage() {
         <div className="mb-6">
           <StatsCards total={feedbacks.length} average={average} thisMonth={thisMonth} />
         </div>
+
+        {/* Graphique Business */}
+        {isBusiness && feedbacks.length > 0 && (
+          <div className="mb-6">
+            <RatingsChart
+              feedbacks={feedbacks.map((f) => ({
+                rating: f.rating,
+                createdAt: f.createdAt,
+                project: f.project ? { id: f.project.id, name: f.project.name } : null,
+              }))}
+              projects={profile.projects}
+            />
+          </div>
+        )}
 
         {/* Liste */}
         <FeedbackList
