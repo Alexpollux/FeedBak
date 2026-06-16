@@ -7,7 +7,12 @@ import ProSettings from '@/components/dashboard/ProSettings'
 import RedirectSettings from '@/components/dashboard/RedirectSettings'
 import { ArrowRight } from 'lucide-react'
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string; success?: string; canceled?: string }>
+}) {
+  const { upgraded, success, canceled } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -30,6 +35,22 @@ export default async function SettingsPage() {
           <h1 className="font-display font-bold text-2xl text-stone-900">Paramètres</h1>
           <p className="text-stone-400 text-sm mt-1">Gérez votre compte et votre abonnement</p>
         </div>
+
+        {upgraded === 'true' && (
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700 mb-4">
+            🚀 Bienvenue sur le plan Business ! Votre accès est activé immédiatement.
+          </div>
+        )}
+        {success === 'true' && (
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700 mb-4">
+            ✅ Abonnement activé avec succès !
+          </div>
+        )}
+        {canceled === 'true' && (
+          <div className="bg-stone-100 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-600 mb-4">
+            Paiement annulé. Votre plan actuel est conservé.
+          </div>
+        )}
 
         {/* Profil */}
         <div className="bg-white rounded-2xl border border-stone-100 p-6 mb-4">
@@ -125,6 +146,36 @@ export default async function SettingsPage() {
           </div>
         )}
 
+        {/* Upgrade Pro → Business */}
+        {isPro && (
+          <div className="bg-gradient-to-br from-stone-50 to-slate-50 rounded-2xl border border-stone-200 p-6 mb-4">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h2 className="font-display font-semibold text-stone-900 mb-1">Passer au Business 🚀</h2>
+                <ul className="text-sm text-stone-500 space-y-1">
+                  <li>✓ 20 projets (vs 5 en Pro)</li>
+                  <li>✓ Sans branding FeedBak</li>
+                  <li>✓ Support dédié</li>
+                </ul>
+                <p className="text-xs text-stone-400 mt-3">
+                  Le passage est immédiat. La différence au prorata sera facturée aujourd'hui.
+                </p>
+              </div>
+              <span className="font-display font-bold text-2xl text-stone-700 shrink-0 ml-4">
+                30€<span className="text-sm font-normal text-stone-400">/mois</span>
+              </span>
+            </div>
+            <form action="/api/stripe/upgrade" method="POST">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 bg-stone-800 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
+              >
+                Passer au Business <ArrowRight size={14} />
+              </button>
+            </form>
+          </div>
+        )}
+
         {/* Gérer abonnement (Pro ou Business) */}
         {(isPro || isBusiness) && (
           <div className="bg-white rounded-2xl border border-stone-100 p-6">
@@ -138,7 +189,7 @@ export default async function SettingsPage() {
               href="/api/stripe/portal"
               className="text-sm text-amber-600 font-medium hover:underline"
             >
-              Gérer mon abonnement →
+              Gérer / annuler mon abonnement →
             </a>
           </div>
         )}
